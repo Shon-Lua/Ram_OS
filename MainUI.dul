@@ -1,1 +1,41 @@
-soon
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ram OS</title>
+<style>
+  body { margin:0; background:#0078d4; font-family:'Segoe UI',sans-serif; display:flex; height:100vh; align-items:center; justify-content:center; }
+  .lock-screen { text-align:center; color:#fff; }
+  .pin-input { font-size:2em; width:150px; text-align:center; border:none; border-bottom:2px solid #fff; background:transparent; color:#fff; outline:none; }
+  .error { color:red; }
+</style>
+</head>
+<body>
+<div class="lock-screen">
+  <h1>Welcome</h1>
+  <p>Enter PIN to unlock</p>
+  <input type="password" class="pin-input" id="pin" maxlength="6" pattern="[0-9]*" inputmode="numeric">
+  <p class="error" id="error"></p>
+</div>
+<script>
+const pinInput = document.getElementById('pin');
+pinInput.addEventListener('input', function(e) {
+  let val = e.target.value.replace(/[^0-9]/g,'');
+  if (val.length > 6) val = val.slice(0,6);
+  e.target.value = val;
+  if (val.length === 6) {
+    fetch('/checkpin?pin='+val).then(r=>r.json()).then(data=>{
+      if (data.valid) {
+        document.querySelector('.lock-screen').style.display = 'none';
+        // load desktop
+        document.body.innerHTML = '<div style="background:#f0f0f0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><h1>Ram Desktop</h1></div>';
+      } else {
+        document.getElementById('error').textContent = 'Incorrect PIN';
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
